@@ -1,0 +1,414 @@
+from pathlib import Path
+import zipfile, textwrap
+
+root = Path("/mnt/data/romantic-github-pages")
+root.mkdir(parents=True, exist_ok=True)
+
+index_html = r'''<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#16070d">
+  <title>Untuk Istriku, Cintaku ❤️</title>
+  <meta name="description" content="Sebuah halaman kecil untuk perempuan yang selalu menjadi rumah.">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+
+    :root {
+      --bg: #10060b;
+      --bg-soft: #1b0a12;
+      --rose: #ff7b9c;
+      --rose-soft: #ffb6c7;
+      --cream: #fff4f0;
+      --muted: #d5b9c2;
+      --line: rgba(255,255,255,.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--cream);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,91,132,.18), transparent 30%),
+        radial-gradient(circle at 80% 25%, rgba(180,80,255,.12), transparent 28%),
+        linear-gradient(145deg, #0c0408 0%, #1a0810 55%, #0b0408 100%);
+      font-family: "DM Sans", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .08;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      z-index: 20;
+    }
+
+    .hearts { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+    .heart {
+      position: absolute;
+      bottom: -40px;
+      color: rgba(255, 123, 156, .35);
+      animation: rise linear infinite;
+      font-size: 18px;
+    }
+    .heart:nth-child(1) { left: 8%; animation-duration: 12s; animation-delay: 0s; }
+    .heart:nth-child(2) { left: 23%; animation-duration: 15s; animation-delay: 3s; }
+    .heart:nth-child(3) { left: 47%; animation-duration: 11s; animation-delay: 1s; }
+    .heart:nth-child(4) { left: 68%; animation-duration: 14s; animation-delay: 5s; }
+    .heart:nth-child(5) { left: 88%; animation-duration: 13s; animation-delay: 2s; }
+
+    @keyframes rise {
+      from { transform: translateY(0) rotate(0deg); opacity: 0; }
+      15% { opacity: 1; }
+      to { transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(to bottom, rgba(10,3,7,.75), transparent);
+      backdrop-filter: blur(8px);
+    }
+    nav a {
+      color: rgba(255,244,240,.75);
+      text-decoration: none;
+      margin: 0 14px;
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: .25s;
+    }
+    nav a:hover { color: var(--rose-soft); }
+
+    main { position: relative; z-index: 2; }
+
+    section {
+      width: min(1080px, calc(100% - 40px));
+      margin: auto;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 100px 20px 70px;
+    }
+
+    .eyebrow {
+      color: var(--rose-soft);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .3em;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, .quote {
+      font-family: "Cormorant Garamond", serif;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: clamp(58px, 10vw, 125px);
+      line-height: .82;
+      font-weight: 600;
+      letter-spacing: -.045em;
+    }
+
+    h1 span {
+      display: block;
+      color: var(--rose-soft);
+      font-style: italic;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: 32px auto 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 30px;
+      padding: 14px 22px;
+      border: 1px solid rgba(255,123,156,.35);
+      border-radius: 999px;
+      color: white;
+      text-decoration: none;
+      background: rgba(255,123,156,.09);
+      transition: .3s;
+    }
+    .cta:hover {
+      transform: translateY(-3px);
+      background: rgba(255,123,156,.17);
+      box-shadow: 0 15px 40px rgba(255,70,120,.12);
+    }
+
+    .section {
+      padding: 120px 0;
+    }
+
+    .label {
+      color: var(--rose);
+      font-size: 11px;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(42px, 6vw, 72px);
+      line-height: .95;
+      font-weight: 600;
+    }
+
+    .letter {
+      margin-top: 35px;
+      padding: clamp(28px, 6vw, 65px);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: linear-gradient(145deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+      box-shadow: 0 30px 100px rgba(0,0,0,.25);
+    }
+
+    .letter p {
+      color: #ead6dc;
+      line-height: 2;
+      font-size: 17px;
+      margin: 0 0 22px;
+    }
+
+    .letter p:last-child { margin-bottom: 0; }
+
+    .quote-wrap {
+      min-height: 70vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .quote {
+      max-width: 900px;
+      font-size: clamp(42px, 6vw, 78px);
+      line-height: 1.03;
+      font-style: italic;
+    }
+
+    .quote small {
+      display: block;
+      margin-top: 28px;
+      font-family: "DM Sans", sans-serif;
+      color: var(--muted);
+      font-size: 13px;
+      font-style: normal;
+      letter-spacing: .08em;
+    }
+
+    .promise {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 35px;
+    }
+
+    .card {
+      padding: 28px;
+      min-height: 190px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,.035);
+    }
+    .card .icon { font-size: 30px; }
+    .card h3 {
+      margin: 18px 0 9px;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 30px;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 80px 20px 45px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer strong { color: var(--rose-soft); }
+
+    @media (max-width: 720px) {
+      nav a { margin: 0 7px; font-size: 10px; }
+      .promise { grid-template-columns: 1fr; }
+      .section { padding: 85px 0; }
+      .letter { border-radius: 22px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hearts" aria-hidden="true">
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+  </div>
+
+  <nav>
+    <a href="#surat">Surat</a>
+    <a href="#janji">Janji</a>
+    <a href="#selamanya">Selamanya</a>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Untuk perempuan yang kupilih setiap hari</div>
+        <h1>
+          Kamu adalah
+          <span>rumahku. ❤️</span>
+        </h1>
+        <p>
+          Di antara begitu banyak cerita yang mungkin terjadi dalam hidup,
+          aku bersyukur cerita terindahku adalah cerita yang berjalan bersamamu.
+        </p>
+        <a class="cta" href="#surat">Buka surat kecilku ↓</a>
+      </div>
+    </section>
+
+    <section class="section" id="surat">
+      <div class="label">Sebuah surat</div>
+      <h2>Untuk istriku,<br>cintaku.</h2>
+
+      <div class="letter">
+        <p>
+          Terima kasih sudah menjadi seseorang yang selalu ada di sampingku.
+          Mungkin aku tidak selalu pandai mengucapkan semuanya dengan kata-kata,
+          tetapi percayalah, keberadaanmu adalah salah satu hadiah paling indah
+          yang pernah Allah titipkan dalam hidupku.
+        </p>
+
+        <p>
+          Aku mencintaimu bukan hanya ketika semuanya mudah. Aku ingin tetap
+          mencintaimu ketika hari sedang berat, ketika kita sedang lelah,
+          ketika ada perbedaan, dan ketika hidup tidak berjalan seperti yang kita rencanakan.
+        </p>
+
+        <p>
+          Kalau suatu hari rambut kita mulai memutih dan langkah kita tidak lagi
+          secepat sekarang, aku ingin masih menggenggam tangan yang sama:
+          tanganmu.
+        </p>
+
+        <p>
+          Aku mungkin tidak bisa menjanjikan hidup tanpa masalah.
+          Tapi aku bisa berusaha menjanjikan satu hal:
+          <strong>aku akan terus memilihmu, lagi dan lagi.</strong>
+        </p>
+
+        <p>
+          Terima kasih sudah menjadi istriku. Terima kasih sudah menjadi tempat
+          pulang. Dan terima kasih karena sampai hari ini, aku masih bisa
+          menyebutmu dengan kalimat yang sederhana namun paling berarti:
+          <em>“istriku, aku mencintaimu.”</em> ❤️
+        </p>
+      </div>
+    </section>
+
+    <section class="quote-wrap" id="selamanya">
+      <div class="quote">
+        “Jika hidup adalah perjalanan panjang,
+        aku tidak meminta jalan yang selalu mudah.
+        Aku hanya ingin kamu tetap berjalan
+        di sampingku.”
+        <small>— Untukmu, istriku ❤️</small>
+      </div>
+    </section>
+
+    <section class="section" id="janji">
+      <div class="label">Tiga hal yang ingin kujaga</div>
+      <h2>Sederhana,<br>tapi sungguh-sungguh.</h2>
+
+      <div class="promise">
+        <div class="card">
+          <div class="icon">🤍</div>
+          <h3>Menjagamu</h3>
+          <p>
+            Bukan berarti aku selalu sempurna, tetapi aku akan terus belajar
+            menjadi suami yang membuatmu merasa aman, dihargai, dan dicintai.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="icon">🌙</div>
+          <h3>Menemanimu</h3>
+          <p>
+            Dalam hari yang ramai maupun malam yang sunyi, aku ingin tetap
+            menjadi orang yang bisa kamu cari dan tempat kamu pulang.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="icon">💍</div>
+          <h3>Memilihmu</h3>
+          <p>
+            Bukan cuma sekali ketika mengucapkan janji, tetapi setiap hari,
+            dalam keputusan kecil maupun besar yang kita jalani bersama.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Dibuat dengan ❤️ oleh <strong>sangsaka</strong><br>
+    untuk satu perempuan yang paling istimewa.
+  </footer>
+</body>
+</html>
+'''
+
+readme = """# Romantic Landing Page ❤️
+
+Landing page romantis untuk GitHub Pages.
+
+## Cara pakai
+
+1. Buat repository GitHub bernama `sangsakaa.github.io`.
+2. Upload `index.html` ke branch `main`.
+3. Buka **Settings → Pages**.
+4. Pada **Build and deployment**, pilih source yang sesuai (misalnya GitHub Actions atau branch `main`).
+5. Situs akan tersedia di `https://sangsakaa.github.io/`.
+
+Semua tampilan utama ada di satu file `index.html`, jadi mudah diedit.
+"""
+
+(root / "index.html").write_text(index_html, encoding="utf-8")
+(root / "README.md").write_text(readme, encoding="utf-8")
+
+zip_path = Path("/mnt/data/romantic-github-pages-sangsakaa.zip")
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+    for file in root.iterdir():
+        z.write(file, file.name)
+
+print(f"File siap: {zip_path}")
